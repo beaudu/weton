@@ -192,7 +192,7 @@ if ~isempty(search)
 	end
 end
 
-if nargin == 2 & isempty(search)
+if nargin == 2 && isempty(search)
 	s = cell(10,1);
 
 	kal = cell(5,7);
