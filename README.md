@@ -17,6 +17,30 @@ all return the string "Selasa Kliwon 12 Pasa 1900 Ehé Adi Arbangiyah, 3 Desembe
 
 A second use of this function is to display a month calendar that combines the 5-day "Pasaran" cycle and the 7-day Gregorian/Islamic week, called "Wetonan".
 
+```matlab
+>> weton(2016,8)
+```
+returns the following table:
+
+```
+--------------------- WETONAN BULAN AGUSTUS 2016 ---------------------
+Awal:  Senen Pon/Petak Gumbreg 26 Sawal 1949 Jimawal Sengara Salasiyah,  1 Agustus 2016
+Akhir: Rebo Pon/Petak Sungsang 27 Dulkangidah 1949 Jimawal Sengara Salasiyah, 31 Agustus 2016
+--------------------------------------------------------------------
+                Senen   Selasa  Rebo    Kemis   Jemuwah Setu    Akad
+   Pon/Petak      01      16      31      11      26      06      21
+ Wage/Cemeng      22      02      17       -      12      27      07
+ Kliwon/Asih      08      23      03      18       -      13      28
+  Legi/Manis      29      09      24      04      19       -      14
+Pahing/Pahit      15      30      10      25      05      20       -
+```
+
+A third use is a search mode, looking for regular expression in the full Javanese date string. For example, looking for the next "30 Rejeb" date:
+
+```matlab
+>> weton('30 rejeb')
+Kemis Pahing/Pahit Mandasiya 30 Rejeb 1950 Je Sengara Salasiyah, 27 April 2017.
+```
 
 ## Author
 **François Beauducel**, [IPGP](www.ipgp.fr), [beaudu](https://github.com/beaudu), beauducel@ipgp.fr 

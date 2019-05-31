@@ -1,4 +1,4 @@
-function XX = weton(year,month,day,n)
+function varargout = weton(year,month,day,n)
 %WETON	Javanese calendar / Wetonan.
 %	WETON without input argument returns the javanese date for today,
 %	in the form:
@@ -19,7 +19,7 @@ function XX = weton(year,month,day,n)
 %	YEAR-MONTH-DAY in the Gregorian calendar.
 %
 %	WETON(YEAR,MONTH,DAY,N) returns the list of your N first javanese
-%	birthdays (from the 35-day "Weton" cycle). Example: if you are born 
+%	birthdays (from the 35-day "Weton" cycle). Example: if you are born
 %	on Dec 3, 1968 then
 %	   weton(1968,12,3,10)
 %	returns your 10 first Wetons. Thanks to the Matlab flexibility,
@@ -40,17 +40,17 @@ function XX = weton(year,month,day,n)
 %	WETON(YEAR,MONTH) returns a javanese calendar for YEAR and MONTH in a
 %	table combining the 5-day "Pasaran" cycle and 7-day Gregorian week.
 %	Example: weton(1994,4) returns the following:
-%	
-%	------------------ WETONAN BULAN APRIL 1994 ------------------          
-%	Awal:  Jemuwah Kliwon/Asih Sungsang 19 Sawal 1926 J Sancaya Salasiyah,  1 April 1994 
+%
+%	------------------ WETONAN BULAN APRIL 1994 ------------------
+%	Awal:  Jemuwah Kliwon/Asih Sungsang 19 Sawal 1926 J Sancaya Salasiyah,  1 April 1994
 %	Akhir: Setu Wage/Cemeng Mandasiya 19 Dulkangidah 1926 J Sancaya Salasiyah, 30 April 1994
-%	------------------------------------------------------------------      
-%            Senin  Selasa    Rebo   Kemis Jemuwah    Setu    Akad      
-%	   Pon      04      19       -      14      29      09      24          
-%	  Wage      25      05      20       -      15      30      10          
-%	Kliwon      11      26      06      21      01      16       -          
-%	  Legi       -      12      27      07      22      02      17          
-%	Pahing      18       -      13      28      08      23      03          
+%	------------------------------------------------------------------
+%            Senin  Selasa    Rebo   Kemis Jemuwah    Setu    Akad
+%	   Pon      04      19       -      14      29      09      24
+%	  Wage      25      05      20       -      15      30      10
+%	Kliwon      11      26      06      21      01      16       -
+%	  Legi       -      12      27      07      22      02      17
+%	Pahing      18       -      13      28      08      23      03
 %
 %	where "Awal:" is the first day of the month, "Akhir:" the last one.
 %
@@ -76,37 +76,37 @@ function XX = weton(year,month,day,n)
 %	   weton('30 rejeb')		% looks for the next "30 Rejeb"
 %
 %
-%	Author: Mas François Beauducel
+%	Author: Mas FranÃ§ois Beauducel
 %
 %	References:
 %	   https://id.wikipedia.org/wiki/Kalender_Jawa
 %
 %	Created: 1999-01-27 (Rebo Pahing), in Paris (France)
-%	Updated: 2016-05-06 (Jemuwah Legi)
+%	Updated: 2019-01-15 (Selasa Kliwon)
 
-%	Copyright (c) 2016, François Beauducel, covered by BSD License.
+%	Copyright (c) 2019, FranÃ§ois Beauducel, covered by BSD License.
 %	All rights reserved.
 %
-%	Redistribution and use in source and binary forms, with or without 
-%	modification, are permitted provided that the following conditions are 
+%	Redistribution and use in source and binary forms, with or without
+%	modification, are permitted provided that the following conditions are
 %	met:
 %
-%	   * Redistributions of source code must retain the above copyright 
+%	   * Redistributions of source code must retain the above copyright
 %	     notice, this list of conditions and the following disclaimer.
-%	   * Redistributions in binary form must reproduce the above copyright 
-%	     notice, this list of conditions and the following disclaimer in 
+%	   * Redistributions in binary form must reproduce the above copyright
+%	     notice, this list of conditions and the following disclaimer in
 %	     the documentation and/or other materials provided with the distribution
-%	                           
-%	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-%	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-%	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-%	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-%	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-%	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-%	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-%	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-%	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-%	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+%
+%	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+%	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+%	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+%	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+%	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+%	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+%	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+%	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+%	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+%	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 %	POSSIBILITY OF SUCH DAMAGE.
 
 global pasaran minggu
@@ -173,7 +173,7 @@ dt = floor(dt);
 
 % --- computes parameters for all dates
 for i = 1:numel(dt)
-	X(i) = wetonan(dt(i));
+	X(i) = wetonan(dt(i),pasaran,minggu);
 end
 s = cat(1,{X.weton});
 
@@ -215,13 +215,12 @@ end
 if nargout == 0
 	disp(char(s));
 else
-	XX = X;
+	varargout{1} = X;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function X = wetonan(dt)
+function X = wetonan(dt,pasaran,minggu)
 %WETONAN Computes Weton from date DT
-global pasaran minggu
 
 % origin date = 1 Sura 1555 Alip Kuntara
 taun0 = 1555;
@@ -244,7 +243,7 @@ bulan = {'Januari','Februari','Maret','April','Mei','Juni', ...
 
 % Wulan = Javanese month names (1/12 of Moon year)
 wulan = {'Sura','Sapar','Mulud','Bakdamulud','Jumadilawal','Jumadilakhir', ...
-	'Rejeb','Ruwah','Pasa','Sawal','Dulkangidah','Besar'};
+	'Rejeb','Ruwah','Pasa','Sawal','Sela','Besar'};
 
 % Tahun = Moon year, alternate 354 and 355-day length (depending on wulan Besar length)
 taun = {'Alip','Ehe','Jimawal','Je','Dal','Be','Wawu','Jimakhir'};
@@ -308,7 +307,7 @@ X.wuku = wuku{wuku_index};
 X.date = dt;
 X.d = dina;
 X.wulan = wulan{wulan_index};
-X.t = t; 
+X.t = t;
 X.taun = taun{taun_index};
 X.windu = windu{windu_index};
 X.kurup = kurup{kurup_index};
