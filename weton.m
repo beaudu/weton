@@ -4,22 +4,22 @@ function varargout = weton(year,month,day,n)
 %	in the form:
 %	   DINAPITU PASARAN WUKU DINA WULAN T TAUN WINDU KURUP, DAY MONTH YEAR (DINA MULYA)
 %	where:
-%	   DINAPITU PASARAN = combination of day names in the Gregorian/Islamic
-%	   7-day week and Javanese 5-day week, i.e., the "Weton" (Ngoko/Krama)
-%	   WUKU = Javanese/Balinese 7-day week name (30 different)
-%	   DINA = day number in the Javanese month (1 to 29 or 30)
-%	   WULAN = Javanese month name
-%	   T = Javanese year number (starts on 1555)
-%	   TAUN = Javanese year name (8 different, 12-Wulan cycle)
-%	   WINDU = Javanese "decade" name (4 different, 8-Taun cycle)
-%	   KURUP = Javanese "century" name (7 different, 120-Taun cycle)
-%	   DINA MULYA = "noble day" name (if necessary)
+%	   DINAPITU PASARAN = combination of 7-day and 5-day cycles names, i.e.,
+%	   the "Weton",
+%	   WUKU = Javanese/Balinese 7-day week name (30 different),
+%	   DINA = day number in the Javanese lunar month (1 to 29 or 30),
+%	   WULAN = Javanese lunar month name,
+%	   T = Javanese lunar year number "Anno Javanico" (starts on 1555 AJ),
+%	   TAUN = Javanese lunar year name (8 different, 12-Wulan cycle),
+%	   WINDU = Javanese "decade" name (4 different, 8-Taun cycle),
+%	   KURUP = Javanese "century" name (all specific, 15-Windu cycle),
+%	   DINA MULYA = "noble day" name (if necessary).
 %
-%	WETON(YEAR,MONTH,DAY) returns the javanese date corresponding to
-%	YEAR-MONTH-DAY in the Gregorian calendar.
+%	WETON(YEAR,MONTH,DAY) returns the full javanese date corresponding to
+%	YEAR-MONTH-DAY in the Gregorian/Islamic calendar.
 %
 %	WETON(YEAR,MONTH,DAY,N) returns the list of your N first javanese
-%	birthdays (from the 35-day "Weton" cycle). Example: if you are born
+%	birthdays (from the 35-day "Wetonan" cycle). Example: if you are born
 %	on Dec 3, 1968 then
 %	   weton(1968,12,3,10)
 %	returns your 10 first Wetons. Thanks to the Matlab flexibility,
@@ -32,7 +32,7 @@ function varargout = weton(year,month,day,n)
 %	   weton('3-Dec-1968')
 %	   weton([1968,12,3])
 %	all return the string
-%	   'Selasa Kliwon/Asih Julungwangi 12 Pasa 1900 Eh Adi Arbangiyah, 3 Desember 1968'
+%	   'Selasa Kliwon Julungwangi 12 Pasa 1900 AJ Eh Adi Arbangiyah, 3 Desember 1968 CE'
 %
 %
 %	-- Calendar mode --
@@ -42,15 +42,15 @@ function varargout = weton(year,month,day,n)
 %	Example: weton(1994,4) returns the following:
 %
 %	------------------ WETONAN BULAN APRIL 1994 ------------------
-%	Awal:  Jemuwah Kliwon/Asih Sungsang 19 Sawal 1926 J Sancaya Salasiyah,  1 April 1994
-%	Akhir: Setu Wage/Cemeng Mandasiya 19 Dulkangidah 1926 J Sancaya Salasiyah, 30 April 1994
+%	Awal:  Jumungah Kliwon Sungsang 19 Sawal 1926 AJ Jé Sancaya Salasiyah (Asapon),  1 April 1994 CE
+%	Akhir: Sêtu Wage Mandasiya 19 Sela 1926 AJ Jé Sancaya Salasiyah (Asapon), 30 April 1994 CE
 %	------------------------------------------------------------------
-%            Senin  Selasa    Rebo   Kemis Jemuwah    Setu    Akad
+%            Senin  Selasa    Rebo   Kemis Jumungah   Setu  Minggu
 %	   Pon      04      19       -      14      29      09      24
 %	  Wage      25      05      20       -      15      30      10
 %	Kliwon      11      26      06      21      01      16       -
-%	  Legi       -      12      27      07      22      02      17
-%	Pahing      18       -      13      28      08      23      03
+%	  Lêgi       -      12      27      07      22      02      17
+%	 Paing      18       -      13      28      08      23      03
 %
 %	where "Awal:" is the first day of the month, "Akhir:" the last one.
 %
@@ -76,15 +76,15 @@ function varargout = weton(year,month,day,n)
 %	   weton('30 rejeb')		% looks for the next "30 Rejeb"
 %
 %
-%	Author: Mas François Beauducel
+%	Author: Mas François Beauducel, alias Pak Mancung
 %
 %	References:
 %	   https://id.wikipedia.org/wiki/Kalender_Jawa
 %
-%	Created: 1999-01-27 (Rebo Pahing), in Paris (France)
-%	Updated: 2019-01-15 (Selasa Kliwon)
+%	Created: 1999-01-27 (Rêbo Paing), in Paris (France)
+%	Updated: 2020-10-20 (Slasa Wage)
 
-%	Copyright (c) 2019, François Beauducel, covered by BSD License.
+%	Copyright (c) 2020, François Beauducel, covered by BSD License.
 %	All rights reserved.
 %
 %	Redistribution and use in source and binary forms, with or without
@@ -109,13 +109,48 @@ function varargout = weton(year,month,day,n)
 %	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 %	POSSIBILITY OF SUCH DAMAGE.
 
-global pasaran minggu
+% origin date = 1 Sura 1555 AJ Alip Kuntara Jamingiyah = 8 July 1633 CE
+taun0 = 1555;
+t0 = datenum(1633,7,8);
 
 % Pasaran = 5 day-names of javanese pasaran
-pasaran = {'Pon/Petak','Wage/Cemeng','Kliwon/Asih','Legi/Manis','Pahing/Pahit'};
+pasaran = {'Pon','Wage','Kliwon','Lêgi','Paing'};
 
 % Minggu = 7 day-names of gregorian week
-minggu = {'Senen','Selasa','Rebo','Kemis','Jemuwah','Setu','Akad'};
+minggu = {'Sênèn','Slasa','Rêbo','Kêmis','Jumungah','Sêtu','Ngahad'};
+
+% Wuku = 30 week names in the Javanese/Balinese calendar
+wuku = {'Sinta','Landep','Wukir','Kurantil','Tolu','Gumbreg', ...
+	'Warigalit','Warigagung','Julungwangi','Sungsang','Galungan','Kuningan', ...
+	'Langkir','Mandasiya','Julungpujut','Pahang','Kuruwelut','Marakeh', ...
+	'Tambir','Medangkungan','Maktal','Wuye','Manahil','Prangbakat', ...
+	'Bala','Wugu','Wayang','Kulawu','Dukut','Watugunung'};
+
+% Bulan = Gregorian month names
+bulan = {'Januari','Februari','Maret','April','Mei','Juni', ...
+	'Juli','Agustus','September','Oktober','November','Desember'};
+
+% Wulan = Javanese month names (1/12 of Moon year)
+wulan = {'Sura','Sapar','Mulud','Bakdamulud','Jumadilawal','Jumadilakhir', ...
+	'Rêjêb','Ruwah','Pasa','Sawal','Sela','Bêsar'};
+
+% Taun = Moon year, alternate 354 and 355-day length (depending on taun and kurup)
+taun = {'Alip','Ehé','Jimawal','Jé','Dal','Bé','Wawu','Jimakir'};
+
+% Windu = 8-taun cycle = 81-wetonan = 2835-day
+windu = {'Adi','Kuntara','Sêngara','Sancaya'};
+
+% Kurup = 120-taun cycle (-1 day), if normal
+% [name,first Taun AJ, Taun offset
+kurup = { ...
+	'Jamingiyah (A''ahgi)',1555, 0; % first Kurup (120 taun)
+	'Kamsiyah (Amiswon)',  1675, 0; % second Kurup (74 taun)
+	'Arbangiyah (Aboge)',  1749, 2; % third Kurup (118 taun)
+	'Salasiyah (Asapon)',  1867, 0; % fourth Kurup (120 taun)
+	'Isneniyah (Anenhing)',1987, 0; % fifth Kurup (120 taun)
+	'Akadiyah (Akadgi)',   2107, 0; % sixth Kurup (120 taun)
+	'Sabtiyah (Atuwon)',   2227, 0; % seventh Kurup (120 taun)
+	};
 
 if nargin > 4
 	error('Too many input arguments.');
@@ -171,9 +206,57 @@ otherwise
 end
 dt = floor(dt);
 
+if any(dt < t0)
+	warning('Some dates are unvalid (before %s)',datestr(t0));
+end
+
+% --- makes the windu table
+
+% for each Windu, determine a vector of number of days
+w354 = 29+[1,0,1,0,1,0,1,0,1,0,1,0]';	% Tahun 1,3,4/5,6,7
+w355 = 29+[1,0,1,0,1,0,1,0,1,0,1,1]';	% Tahun 2,4/5,8
+wtd1 = 29+[1,0,1,0,1,0,1,0,1,0,1,1]';	% Tahun 5 (Dal) Kurup 1
+wtd2 = 29+[1,1,0,0,1,0,1,0,1,0,1,1]';	% Tahun 5 (Dal) Kurup 2
+wtd3 = 29+[1,1,0,0,0,0,1,0,1,0,1,1]';	% Tahun 5 (Dal) Kurup 3
+wtd4 = 29+[1,0,1,0,1,0,1,0,1,0,1,0]';	% Tahun 5 (Dal) Kurup>3
+
+% initializes the wt Windu/Taun table (approximate maximum kurup)
+nkrp = ceil(max(dt(:)-t0)/(15*81*7*5 - 1)) + 1;
+wt = zeros(12,120*nkrp);
+
+if nkrp > 5
+	warning('Some dates are speculative (too distant future).');
+end
+
+for k = 1:nkrp
+	% Windu matrix (size 12x8) of Wulan x Tahun, depending on the Kurup
+	switch k
+		case 1
+			hw = [w354,w355,w354,w354,wtd1,w354,w354,w355];
+		case 2
+			hw = [w354,w355,w354,w354,wtd2,w354,w354,w355];
+		case 3
+			hw = [w354,w355,w354,w355,wtd3,w354,w354,w355];
+		otherwise
+			hw = [w354,w355,w354,w355,wtd4,w354,w354,w355];
+	end
+	krp = repmat(hw,1,15); % full Kurup matrix of 15 Windu
+	itn = kurup{k,2}:kurup{k+1,2}-1; % index of Taun
+	
+	% removes 1 day at the end of the Kurup
+	kend = itn(end) - kurup{k,2} + 1;
+	krp(end,kend) = krp(end,kend) - 1;
+	
+	% fills the tw matrix
+	wt(:,itn - taun0 + 1) = krp(:,itn - kurup{k,2} + kurup{k,3} + 1);
+	
+end
+% computes the cumulative number of days
+wt = reshape(cumsum(wt(:)),size(wt));
+
 % --- computes parameters for all dates
 for i = 1:numel(dt)
-	X(i) = wetonan(dt(i),pasaran,minggu);
+	X(i) = javcal(dt(i));
 end
 s = cat(1,{X.weton});
 
@@ -200,14 +283,17 @@ if nargin == 2 && isempty(search)
 	for i = 1:day
 		kal{mod(dt(i)+2,5)+1,mod(dt(i)+4,7)+1} = sprintf('%02d',i);
 	end
-	s{1} = sprintf('--------------------- WETONAN BULAN %s %d ---------------------', ...
+	s{1} = sprintf('------------------------ WETONAN BULAN %10s %d -------------------------', ...
 	   upper(X(1).month),X(1).year);
 	s{2} = sprintf('Awal:  %s',X(1).weton);
 	s{3} = sprintf('Akhir: %s',X(end).weton);
-	s{4} = sprintf('%s',repmat('-',68,1));
-	s{5} = sprintf('%s %s',repmat(' ',1,15),[char(minggu),32*ones(7,1)]');
-	for i = 1:5
-		s{5+i} = [sprintf('%12s',pasaran{i}),sprintf('%8s',kal{i,:})];
+	s{4} = sprintf('%s',repmat('-',80,1));
+	s{5} = sprintf('%15s',' ');
+	for i = 1:length(minggu)
+		s{5} = [s{5},sprintf('%-9s',minggu{i})];
+	end
+	for i = 1:length(pasaran)
+		s{5+i} = [sprintf('%12s',pasaran{i}),sprintf('%9s',kal{i,:})];
 	end
 end
 
@@ -218,132 +304,77 @@ else
 	varargout{1} = X;
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function X = wetonan(dt,pasaran,minggu)
-%WETONAN Computes Weton from date DT
 
-% origin date = 1 Sura 1555 Alip Kuntara
-taun0 = 1555;
-t0 = datenum(1633,7,8);
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	function X=javcal(dt)
+	% computes the full Javanese calendar from CE date DT
 
-% 24 March 1936 = Selasa Pon 1 Sura 1867 Alip Adi Salasiyah (ASAPON)
-%+ start a change of Wulan length in each Tahun
-t1 = datenum(1936,3,24);
-
-% Wuku = 30 week names in the Javanese/Balinese calendar
-wuku = {'Sinta','Landep','Wukir','Kurantil','Tolu','Gumbreg', ...
-	'Warigalit','Warigagung','Julungwangi','Sungsang','Galungan','Kuningan', ...
-	'Langkir','Mandasiya','Julungpujut','Pahang','Kuruwelut','Marakeh', ...
-	'Tambir','Medangkungan','Maktal','Wuye','Manahil','Prangbakat', ...
-	'Bala','Wugu','Wayang','Kulawu','Dukut','Watugunung'};
-
-% Bulan = Gregorian month names
-bulan = {'Januari','Februari','Maret','April','Mei','Juni', ...
-	'Juli','Agustus','September','Oktober','November','Desember'};
-
-% Wulan = Javanese month names (1/12 of Moon year)
-wulan = {'Sura','Sapar','Mulud','Bakdamulud','Jumadilawal','Jumadilakhir', ...
-	'Rejeb','Ruwah','Pasa','Sawal','Sela','Besar'};
-
-% Tahun = Moon year, alternate 354 and 355-day length (depending on wulan Besar length)
-taun = {'Alip','Ehe','Jimawal','Je','Dal','Be','Wawu','Jimakhir'};
-
-% Windu = 8-taun cycle = 81-wetonan = 2835-day
-windu = {'Adi','Kuntara','Sengara','Sancaya'};
-
-% for each Windu, determine a vector for number of days per Tahun
-w354 = 29+[1,0,1,0,1,0,1,0,1,0,1,0]';	% Tahun 1,3,5,6,7
-w355 = 29+[1,0,1,0,1,0,1,0,1,0,1,1]';	% Tahun 2,4,8
-wdal = 29+[1,1,0,0,0,0,1,0,1,0,1,1]';	% Tahun 5 (Dal) before 1936-2-26
-
-% Windu matrix (size 12x8) of Wulan x Tahun
-hw0 = [w354,w355,w354,w355,wdal,w354,w354,w355];	% before 1936-3-26
-hw1 = [w354,w355,w354,w355,w354,w354,w354,w355];	% since 1936-3-26
-
-% Kurup = 120-taun cycle = 15-windu = 42524-day (1 day must be substracted)
-kurup = {'Jamingiyah','Kamsiyah','Arbangiyah','Salasiyah','Isneniyah','Akadiyah','Sabtiyah'};
-
-if any(dt < t0)
-	warning('Some dates are unvalid (before %s)',datestr(t0));
-end
-
-ct = datevec(dt);
-dti = dt - t0;
-dti = dti + floor(dti/(15*81*7*5 - 1));
-% relative date into the Windu
-dw = mod(dti,81*7*5) + 1;
-if dt < t1
+	% relative day number from origin
+	dti = dt - t0 + 1;
 	% finds the Wulan and Tahun into the table of Windu
-	kk = find(cumsum(hw0(:)) >= dw,1);
-	[wulan_index,taun_index] = ind2sub(size(hw0),kk);
+	kk = find(wt(:) >= dti,1);
+	[wulan_index,taun_aj] = ind2sub(size(wt),kk);
 	% computes the day number
-	if kk == 1
-		dina = dw;
+	if kk > 1
+		dina = dti - wt(kk-1);
 	else
-		dina = dw - sum(hw0(1:(kk-1)));
+		dina = dti;
 	end
-else
-	% finds the Wulan and Tahun into the table of Windu
-	kk = find(cumsum(hw1(:)) >= dw,1);
-	[wulan_index,taun_index] = ind2sub(size(hw1),kk);
-	% computes the day number
-	if kk == 1
-		dina = dw;
-	else
-		dina = dw - sum(hw1(1:(kk-1)));
+	% t: taun number
+	t = taun_aj + taun0 - 1;
+	taun_index = mod(taun_aj - 1,8) + 1;
+	pasaran_index = mod(dt + 2,5) + 1;
+	minggu_index = mod(dt + 4,7) + 1;
+	wuku_index = mod(floor((dt - 2)/7) + 25,30) + 1;
+	windu_index = mod(floor(dti/(81*7*5)) + 1,4) + 1;
+	kurup_index = mod(floor(dti/(15*81*7*5)),7) + 1;
+
+	ct = datevec(dt);
+	X.pasaran = pasaran{pasaran_index};
+	X.dinapitu = minggu{minggu_index};
+	X.wuku = wuku{wuku_index};
+	X.date = dt;
+	X.dina = dina;
+	X.wulan = wulan{wulan_index};
+	X.aj = t;
+	X.taun = taun{taun_index};
+	X.windu = windu{windu_index};
+	X.kurup = kurup{kurup_index,1};
+	X.day = ct(3);
+	X.month = bulan{ct(2)};
+	X.year = ct(1);
+
+	% "Dina Mulya": noble days
+	mulya = '';
+	if dina == 1 && wulan_index == 1
+		mulya = 'Siji Sura';	% 1 Sura (new year)
+	end
+	if taun_index == 1 && wulan_index == 3 && pasaran_index == 2
+		mulya = 'Aboge';	% Alip Rebo Wage
+	end
+	if taun_index == 5 && minggu_index == 6 && pasaran_index == 4
+		mulya = 'Daltugi';	% Dal Setu Legi
+	end
+	if wuku_index == 12 && minggu_index == 6 && pasaran_index == 3
+		mulya = 'Kuningan';	% Setu Kliwon Kuningan
+	end
+	if wuku_index == 29 && minggu_index == 2 && pasaran_index == 3
+		mulya = 'Hanggara Asih';	% Selasa Kliwon Dukut
+	end
+	if wuku_index == 30 && minggu_index == 5 && pasaran_index == 3
+		mulya = 'Dina Mulya';	% Jemuwah Kliwon Watugunung
+	end
+	if minggu_index == 5 && pasaran_index == 4
+		mulya = 'Dina Purnama'; % Jemuwah Legi
+	end
+	X.mulyo = mulya;
+
+	ss = sprintf('%s %s %s %2d %1s %4d AJ %s %s %s, %2d %s %4d CE', ...
+	   X.dinapitu,X.pasaran,X.wuku, X.dina, X.wulan, X.aj, X.taun, ...
+	   X.windu, X.kurup, X.day, X.month, X.year);
+	if ~isempty(mulya)
+		ss = sprintf('%s (%s)',ss,upper(mulya));
+	end
+	X.weton = ss;
 	end
 end
-% t: taun number
-t = floor(dti/(81*7*5))*8 + taun_index + taun0 - 1;
-pasaran_index = mod(dt + 2,5) + 1;
-minggu_index = mod(dt + 4,7) + 1;
-wuku_index = mod(floor((dt - 2)/7) + 25,30) + 1;
-windu_index = mod(floor(dti/(81*7*5)) + 1,4) + 1;
-kurup_index = mod(floor(dti/(15*81*7*5)),7) + 1;
-
-X.pasaran = pasaran{pasaran_index};
-X.dina = minggu{minggu_index};
-X.wuku = wuku{wuku_index};
-X.date = dt;
-X.d = dina;
-X.wulan = wulan{wulan_index};
-X.t = t;
-X.taun = taun{taun_index};
-X.windu = windu{windu_index};
-X.kurup = kurup{kurup_index};
-X.day = ct(3);
-X.month = bulan{ct(2)};
-X.year = ct(1);
-
-% "Dina Mulya": noble days
-mulya = '';
-if dina == 1 && wulan_index == 1
-	mulya = 'Siji Sura';	% 1 Sura (new year)
-end
-if taun_index == 1 && wulan_index == 3 && pasaran_index == 2
-	mulya = 'Aboge';	% Alip Rebo Wage
-end
-if taun_index == 5 && minggu_index == 6 && pasaran_index == 4
-	mulya = 'Daltugi';	% Dal Setu Legi
-end
-if wuku_index == 12 && minggu_index == 6 && pasaran_index == 3
-	mulya = 'Kuningan';	% Setu Kliwon Kuningan
-end
-if wuku_index == 29 && minggu_index == 2 && pasaran_index == 3
-	mulya = 'Hanggara Asih';	% Selasa Kliwon Dukut
-end
-if wuku_index == 30 && minggu_index == 5 && pasaran_index == 3
-	mulya = 'Dina Mulya';	% Jumaat Kliwon Watugunung
-end
-if minggu_index == 5 && pasaran_index == 4
-	mulya = 'Dina Purnama';
-end
-X.mulyo = mulya;
-
-ss = sprintf('%s %s %s %2d %1s %4d %s %s %s, %2d %s %4d', ...
-   X.dina,X.pasaran,X.wuku, dina, X.wulan, t, X.taun, ...
-   X.windu, X.kurup, X.day, X.month, X.year);
-if ~isempty(mulya)
-	ss = sprintf('%s (%s)',ss,upper(mulya));
-end
-X.weton = ss;
