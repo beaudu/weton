@@ -37,7 +37,7 @@ Akhir: Sêtu Kliwon Kuruwelut 14 Mulud 1954 AJ Jimakir Sêngara Arbangiyah (Abog
        Paing        -       13       28       08       23       03       18      
 ```
 
-A third use is a search mode, looking for regular expression in the full Javanese date string. For example, looking for the next "30 Rejeb" date:
+A third use is a search mode, looking for regular expression in the full Javanese date string. For example, looking for the next new year "1 Sura":
 
 ```matlab
 >> weton('1 sura')
