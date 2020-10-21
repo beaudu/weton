@@ -15,7 +15,7 @@ This little script computes dates in the full Javanese calendar, indicating Dina
 >> weton('3-Dec-1968')
 >> weton(1968,12,3)
 ```
-all return the string "Slasa Kliwon Julungwangi 13 Pasa 1900 AJ Ehé Adi Arbangiyah (Aboge),  3 Desember 1968 CE".
+all return the string "Slasa Kliwon Julungwangi 13 Pasa 1900 AJ Ehé Adi Langkir Salasiyah (Asapon),  3 Desember 1968 CE".
 
 A second use of this function is to display a month calendar that combines the 5-day "Pasaran" cycle and the 7-day Gregorian/Islamic week, called "Wetonan".
 
@@ -26,8 +26,8 @@ returns the following table:
 
 ```
 ------------------------ WETONAN BULAN    OKTOBER 2020 -------------------------                    
-Awal:  Kêmis Kliwon Langkir 13 Sapar 1954 AJ Jimakir Sêngara Arbangiyah (Aboge),  1 Oktober 2020 CE
-Akhir: Sêtu Kliwon Kuruwelut 14 Mulud 1954 AJ Jimakir Sêngara Arbangiyah (Aboge), 31 Oktober 2020 CE
+Awal:  Kêmis Kliwon Langkir 13 Sapar 1954 AJ Jimakir Sêngara Langkir Salasiyah (Asapon),  1 Oktober 2020 CE
+Akhir: Sêtu Kliwon Kuruwelut 14 Mulud 1954 AJ Jimakir Sêngara Langkir Salasiyah (Asapon), 31 Oktober 2020 CE
 --------------------------------------------------------------------------------                    
                 Sênèn    Slasa     Rêbo    Kêmis Jumungah     Sêtu   Ngahad                         
          Pon       19        -       14       29       09       24       04                         
@@ -41,8 +41,9 @@ A third use is a search mode, looking for regular expression in the full Javanes
 
 ```matlab
 >> weton('1 sura')
-Slasa Pon Kulawu  1 Sura 1955 AJ Alip Sêngara Arbangiyah (Aboge), 10 Agustus 2021 CE (SIJI SURA)
+Slasa Pon Kulawu  1 Sura 1955 AJ Alip Sêngara Langkir Salasiyah (Asapon), 10 Agustus 2021 CE (SIJI SURA)
 ```
+which falls logically on the weton 'Slasa Pon' since we are in the Kurup 4 named 'Asapon'.
 
 ## Author
 **François Beauducel**, [IPGP](www.ipgp.fr), [beaudu](https://github.com/beaudu), beauducel@ipgp.fr

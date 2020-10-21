@@ -2,17 +2,18 @@ function varargout = weton(year,month,day,n)
 %WETON	Javanese calendar / Wetonan.
 %	WETON without input argument returns the javanese date for today,
 %	in the form:
-%	   DINAPITU PASARAN WUKU DINA WULAN T TAUN WINDU KURUP, DAY MONTH YEAR (DINA MULYA)
+%	   DINAPITU PASARAN WUKU DINA WULAN T TAUN WINDU LAMBANG KURUP, DAY MONTH YEAR (DINA MULYA)
 %	where:
 %	   DINAPITU PASARAN = combination of 7-day and 5-day cycles names, i.e.,
-%	   the "Weton",
+%	   the "Weton" (35 different),
 %	   WUKU = Javanese/Balinese 7-day week name (30 different),
 %	   DINA = day number in the Javanese lunar month (1 to 29 or 30),
 %	   WULAN = Javanese lunar month name,
 %	   T = Javanese lunar year number "Anno Javanico" (starts on 1555 AJ),
 %	   TAUN = Javanese lunar year name (8 different, 12-Wulan cycle),
-%	   WINDU = Javanese "decade" name (4 different, 8-Taun cycle),
-%	   KURUP = Javanese "century" name (all specific, 15-Windu cycle),
+%	   WINDU = 8 lunar years (4 different, 8-Taun cycle),
+%	   LAMBANG = 8 lunar years name (2 different, 8-Taun cycle),
+%	   KURUP = 120 lunar years name (all specific, 15-Windu cycle),
 %	   DINA MULYA = "noble day" name (if necessary).
 %
 %	The Javanese calendar has been created on 8 July 1633 CE which
@@ -151,21 +152,22 @@ wulan = {'Sura','Sapar','Mulud','Bakdamulud','Jumadilawal','Jumadilakhir', ...
 % Taun = Moon year, alternate 354 and 355-day length (depending on taun and kurup)
 taun = {'Alip','Ehé','Jimawal','Jé','Dal','Bé','Wawu','Jimakir'};
 
-% Windu = 8-taun cycle = 81-wetonan = 2835-day
+% Windu and Lambang = 8-taun cycle = 81-wetonan = 2835-day
 windu = {'Adi','Kuntara','Sêngara','Sancaya'};
+lambang = {'Kulawu','Langkir'};
 
 % Kurup = 120-taun cycle (-1 day), if normal
-% [name,first Taun AJ, Taun offset
+% [name,shortname,first Taun AJ, Taun offset
 kurup = { ...
-	'Jamingiyah (A''ahgi)',1555, 0; % first Kurup (120 taun)
-	'Kamsiyah (Amiswon)',  1675, 0; % second Kurup (74 taun)
-	'Arbangiyah (Aboge)',  1749, 2; % third Kurup (118 taun)
-	'Salasiyah (Asapon)',  1867, 0; % fourth Kurup (120 taun)
-%	'Isneniyah (Anenhing)',1987, 0; % fifth Kurup (120 taun)
-%	'Akadiyah (Akadgi)',   2107, 0; % sixth Kurup (120 taun)
-%	'Sabtiyah (Atuwon)',   2227, 0; % seventh Kurup (120 taun)
+	'Jamingiyah','A''ahgi', 1555, 0; % first Kurup (120 taun)
+	'Kamsiyah',  'Amiswon', 1675, 0; % second Kurup (74 taun)
+	'Arbangiyah','Aboge',   1749, 2; % third Kurup (118 taun)
+	'Salasiyah', 'Asapon',  1867, 0; % fourth Kurup (120 taun)
+%	'Isneniyah', 'Anenhing',1987, 0; % fifth Kurup (120 taun)
+%	'Akadiyah', 'Akadgi',   2107, 0; % sixth Kurup (120 taun)
+%	'Sabtiyah', 'Atuwon',   2227, 0; % seventh Kurup (120 taun)
 	};
-kft = cat(1,kurup{:,2}); % vector of Kurup 1st taun
+kft = cat(1,kurup{:,3}); % vector of Kurup 1st taun
 
 if nargin > 4
 	error('Too many input arguments.');
@@ -257,10 +259,10 @@ for k = 1:nkrp
 	end
 	krp = repmat(hw,1,15); % full Kurup matrix of 15 Windu
 	if k < size(kurup,1)
-		itn = kurup{k,2}:kurup{k+1,2}-1; % index of Taun
-		dtn =  kurup{k,3};
+		itn = kurup{k,3}:kurup{k+1,3}-1; % index of Taun
+		dtn =  kurup{k,4};
 	else
-		itn = kurup{end,2} + 120*(k-size(kurup,1)) + (0:119);
+		itn = kurup{end,3} + 120*(k-size(kurup,1)) + (0:119);
 		dtn = 0;
 	end
 	
@@ -349,8 +351,9 @@ function X=javcal(dt)
 	minggu_index = mod(dt + 4,7) + 1;
 	wuku_index = mod(floor((dt - 2)/7) + 25,30) + 1;
 	windu_index = mod(floor(dti/(81*7*5)) + 1,4) + 1;
+	lambang_index = mod(floor(dti/(81*7*5)),2) + 1;
 	if t < (kft(end) + 120)
-		kurup_index = find(t>=kft,1,'last') - 1;
+		kurup_index = find(t>=kft,1,'last');
 	else
 		kurup_index = floor((t - kft(end))/120) + size(kurup,1);
 	end
@@ -364,10 +367,13 @@ function X=javcal(dt)
 	X.aj = t;
 	X.taun = taun{taun_index};
 	X.windu = windu{windu_index};
+	X.lambang = lambang{lambang_index};
 	if kurup_index <= size(kurup,1)
 		X.kurup = kurup{kurup_index,1};
+		X.kurup_short = kurup{kurup_index,2};
 	else
-		X.kurup = sprintf('(Kurup %d)',kurup_index);
+		X.kurup = sprintf('Kurup %d',kurup_index);
+		X.kurup_short = '';
 	end
 	X.day = ct(3);
 	X.month = bulan{ct(2)};
@@ -398,9 +404,9 @@ function X=javcal(dt)
 	end
 	X.mulyo = mulya;
 
-	ss = sprintf('%s %s %s %2d %1s %4d AJ %s %s %s, %2d %s %4d CE', ...
+	ss = sprintf('%s %s %s %2d %1s %4d AJ %s %s %s %s (%s), %2d %s %4d CE', ...
 	   X.dinapitu,X.pasaran,X.wuku, X.dina, X.wulan, X.aj, X.taun, ...
-	   X.windu, X.kurup, X.day, X.month, X.year);
+	   X.windu, X.lambang, X.kurup, X.kurup_short, X.day, X.month, X.year);
 	if ~isempty(mulya)
 		ss = sprintf('%s (%s)',ss,upper(mulya));
 	end
