@@ -1,4 +1,4 @@
-function varargout = weton(year,month,day,n)
+function varargout = weton(varargin)
 %WETON	Javanese calendar / Wetonan.
 %	WETON without input argument returns the javanese date for today,
 %	in the form:
@@ -39,7 +39,7 @@ function varargout = weton(year,month,day,n)
 %	   weton('3-Dec-1968')
 %	   weton([1968,12,3])
 %	all return the string
-%	   'Selasa Kliwon Julungwangi 12 Pasa 1900 AJ Eh Adi Arbangiyah, 3 Desember 1968 CE'
+%	   'Selasa Kliwon Julungwangi 12 Pasa 1900 AJ Ehe Adi Arbangiyah, 3 Desember 1968 CE'
 %
 %
 %	-- Calendar mode --
@@ -49,17 +49,18 @@ function varargout = weton(year,month,day,n)
 %	Example: weton(1994,4) returns the following:
 %
 %	---------------------- WETONAN BULAN     APRIL 1994 -------------------
-%	Awal:  Jumungah Kliwon Sungsang 19 Sawal 1926 AJ Jé Sancaya Salasiyah (Asapon),  1 April 1994 CE
+%	Awal:  Jumungah Kliwon Sungsang 19 Sawal 1926 AJ Je Sancaya Salasiyah (Asapon),  1 April 1994 CE
 %	Akhir: Sêtu Wage Mandasiya 19 Sela 1926 AJ Jé Sancaya Salasiyah (Asapon), 30 April 1994 CE
 %	-----------------------------------------------------------------------
-%               Sênèn    Slasa     Rêbo    Kêmis Jumungah     Sêtu   Ngahad 
+%               Senen   Selasa     Rebo    Kemis  Jemuwah     Setu   Ngahad 
 %        Pon       04       19        -       14       29       09       24                     
 %       Wage       25       05       20        -       15       30       10                     
 %     Kliwon       11       26       06       21       01       16        -                     
-%       Lêgi        -       12       27       07       22       02       17                     
-%      Paing       18        -       13       28       08       23       03     
+%       Legi        -       12       27       07       22       02       17                     
+%     Pahing       18        -       13       28       08       23       03     
 %
 %	where "Awal:" is the first day of the month, "Akhir:" the last one.
+%
 %
 %	-- Search mode --
 %
@@ -72,11 +73,20 @@ function varargout = weton(year,month,day,n)
 %	(DATENUM format).
 %
 %
+%	-- Options ---
+%
+%	WETON(...,'yogya') will uses the Kurup definition of the Sultanate of
+%	Yogyakarta which differs from the Kasunanan	Surakarta used here as a 
+%	reference. This affects only dates in the range 28 September 1821 to
+%	16 May 1866 CE.
+%
 %	W = WETON(...) returns a structure W with corresponding fields instead
 %	of displaying strings. To see the field names, try
 %	   disp(weton)
 %
-%	Examples:
+%
+%	--- Examples ---
+%
 %	   W = weton(2016,1,1:35);
 %	   datestr(cat(1,W.date))	% use Matlab datenum
 %	   cat(1,char(W.weton))		% display full date strings
@@ -90,7 +100,7 @@ function varargout = weton(year,month,day,n)
 %	   https://www.sastra.org
 %
 %	Created: 1999-01-27 (Rêbo Paing), in Paris (France)
-%	Updated: 2020-10-20 (Slasa Wage)
+%	Updated: 2020-10-22 (Kemis Legi)
 
 %	Copyright (c) 2020, François Beauducel, covered by BSD License.
 %	All rights reserved.
@@ -129,10 +139,10 @@ t0 = datenum(1633,7,8);
 tl = datenum(2052,8,25); 
 
 % Pasaran = 5 day-names of javanese pasaran
-pasaran = {'Pon','Wage','Kliwon','Lêgi','Paing'};
+pasaran = {'Pon','Wage','Kliwon','Legi','Pahing'};
 
 % Minggu = 7 day-names of gregorian week
-minggu = {'Sênèn','Slasa','Rêbo','Kêmis','Jumungah','Sêtu','Ngahad'};
+minggu = {'Senen','Selasa','Rebo','Kemis','Jumungah','Setu','Ngahad'};
 
 % Wuku = 30 week names in the Javanese/Balinese calendar
 wuku = {'Sinta','Landep','Wukir','Kurantil','Tolu','Gumbreg', ...
@@ -143,18 +153,18 @@ wuku = {'Sinta','Landep','Wukir','Kurantil','Tolu','Gumbreg', ...
 
 % Bulan = Gregorian month names
 bulan = {'Januari','Februari','Maret','April','Mei','Juni', ...
-	'Juli','Agustus','September','Oktober','November','Desember'};
+	'Juli','Agustus','September','Oktober','Nopember','Desember'};
 
 % Wulan = Javanese month names (1/12 of Moon year)
-wulan = {'Sura','Sapar','Mulud','Bakdamulud','Jumadilawal','Jumadilakhir', ...
-	'Rêjêb','Ruwah','Pasa','Sawal','Sela','Bêsar'};
+wulan = {'Sura','Sapar','Mulud','Bakdamulud','Jumadilawal','Jumadilakir', ...
+	'Rejeb','Ruwah','Pasa','Sawal','Dulkangidah','Besar'};
 
 % Taun = Moon year, alternate 354 and 355-day length (depending on taun and kurup)
-taun = {'Alip','Ehé','Jimawal','Jé','Dal','Bé','Wawu','Jimakir'};
+taun = {'Alip','Ehe','Jimawal','Je','Dal','Be','Wawu','Jimakir'};
 
 % Windu and Lambang = 8-taun cycle = 81-wetonan = 2835-day
-windu = {'Adi','Kuntara','Sêngara','Sancaya'};
-lambang = {'Kulawu','Langkir'};
+windu = {'Adi','Kuntara','Sengara','Sancaya'};
+lambang = {'Langkir','Kulawu'};
 
 % Kurup = 120-taun cycle (-1 day), if normal
 % [name,shortname,first Taun AJ, Taun offset
@@ -167,57 +177,60 @@ kurup = { ...
 %	'Akadiyah', 'Akadgi',   2107, 0; % sixth Kurup (120 taun)
 %	'Sabtiyah', 'Atuwon',   2227, 0; % seventh Kurup (120 taun)
 	};
+
+% Kurup 3 in Yogyakarta
+kurup3 = { ...
+	'Arbangiyah','Aboge',   1795, 0; % third Kurup (72 taun)
+	};
+
+yogya = false;
+k = strcmpi(varargin,'yogya');
+if any(k)
+	yogya = true;
+	varargin(k) = [];
+	kurup(3,:) = kurup3;
+end
+
 kft = cat(1,kurup{:,3}); % vector of Kurup 1st taun
-
-if nargin > 4
-	error('Too many input arguments.');
-end
-
-if nargin == 2
-	% if year is a 4-digit value, supposes it is not a datenum date
-	if year < 10000 && ischar(month)
-		year = datenum(year,1,1:366);
-	end
-end
-
-if nargin > 2 && ~isnumeric(day)
-	error('DAY argument must be numeric.')
-end
-
-if nargin == 4 && (~isnumeric(n) ||  numel(n) > 1)
-	error('N argument must be scalar.')
-end
 
 search = '';
 
-switch nargin
+switch nargin - yogya
 case 1
 	try
-		dt = datenum(year);
+		dt = datenum(varargin{1});
 	catch
-		if ischar(year)
+		if ischar(varargin{1})
 			dt = now + (1:366*8);	% will search from today to 8 years ahead
-			search = year;
+			search = varargin{1};
 		else
 			error('T is not a valid date (DATENUM).')
 		end
 	end
 case 2
-	if ischar(month)
-		search = month;
-		dt = datenum(year);
+	if ischar(varargin{2})
+		% search mode
+		search = varargin{2};
+		% if year is a 4-digit value, supposes it is not a datenum date and
+		% searches all the year
+		if varargin{1} < 10000
+			dt = datenum(varargin{1},1,1:366);
+		else
+			dt = datenum(varargin{1});
+		end
 	else
+		% month calendar mode
 		% calculates the number of days in month using DATEVEC
-		ct = datevec(datenum(year,month,1:31));
-		year = ct(1,1);
-		month = ct(1,2);
+		ct = datevec(datenum(varargin{1},varargin{2},1:31));
 		day = max(ct(:,3));
-		dt = datenum(year,month,1:day);
+		dt = datenum(ct(1,1),ct(1,2),1:day);
 	end
 case 3
-	dt = datenum(year,month,day);
+	dt = datenum(varargin{1},varargin{2},varargin{3});
 case 4
-	dt = datenum(year,month,day) + 35*(0:n)';
+	if isnumeric(varargin{4})
+		dt = datenum(varargin{1},varargin{2},varargin{3}) + 35*(0:varargin{4})';
+	end
 otherwise
 	dt = now;
 end
@@ -312,9 +325,9 @@ if nargin == 2 && isempty(search)
 	s{2} = sprintf('Awal:  %s',X(1).weton);
 	s{3} = sprintf('Akhir: %s',X(end).weton);
 	s{4} = sprintf('%s',repmat('-',80,1));
-	s{5} = sprintf('%15s',' ');
+	s{5} = sprintf('%12s',' ');
 	for i = 1:length(minggu)
-		s{5} = [s{5},sprintf('%-9s',minggu{i})];
+		s{5} = [s{5},sprintf('%9s',minggu{i})];
 	end
 	for i = 1:length(pasaran)
 		s{5+i} = [sprintf('%12s',pasaran{i}),sprintf('%9s',kal{i,:})];
@@ -351,13 +364,14 @@ function X=javcal(dt)
 	minggu_index = mod(dt + 4,7) + 1;
 	wuku_index = mod(floor((dt - 2)/7) + 25,30) + 1;
 	windu_index = mod(floor(dti/(81*7*5)) + 1,4) + 1;
-	lambang_index = mod(floor(dti/(81*7*5)),2) + 1;
+	lambang_index = mod(floor(dti/(81*7*5)) + 1,2) + 1;
 	if t < (kft(end) + 120)
 		kurup_index = find(t>=kft,1,'last');
 	else
 		kurup_index = floor((t - kft(end))/120) + size(kurup,1);
 	end
 	ct = datevec(dt);
+	X.ngayogyakarta = yogya;
 	X.pasaran = pasaran{pasaran_index};
 	X.dinapitu = minggu{minggu_index};
 	X.wuku = wuku{wuku_index};
