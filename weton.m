@@ -65,17 +65,20 @@ function varargout = weton(varargin)
 %	-- Search mode --
 %
 %	WETON(REGEXP) will search the next match REGEXP into the full Javanese
-%	date string from today (limited to the next 8 years).
+%	date string from today and 8 years ahead.
 %
-%	WETON(YEAR,REGEXP) will search the match REGEXP into the current YEAR.
+%	WETON(YEAR,REGEXP) will search all matches REGEXP only in the year YEAR.
 %
-%	WETON(T,REGEXP) searches the string match REGEXP into date vector T
-%	(DATENUM format).
+%	WETON(T,REGEXP) searches all matches REGEXP into the date vector T (any
+%	valid DATENUM input format).
+%
+%	WETON('all',REGEXP) searches all matches REGEXP into the whole
+%	Javanese calendar period, i.e., from 8 July 1633 until today.
 %
 %
-%	-- Options ---
+%	-- Options --
 %
-%	WETON(...,'yogya') will uses the Kurup definition of the Sultanate of
+%	WETON(...,'jogja') will uses the Kurup definition of the Sultanate of
 %	Yogyakarta which differs from the Kasunanan	Surakarta used here as a 
 %	reference. This affects only dates in the range 28 September 1821 to
 %	16 May 1866 CE.
@@ -100,7 +103,7 @@ function varargout = weton(varargin)
 %	   https://www.sastra.org
 %
 %	Created: 1999-01-27 (Rêbo Paing), in Paris (France)
-%	Updated: 2020-10-22 (Kemis Legi)
+%	Updated: 2020-12-24 (Kemis Wage)
 
 %	Copyright (c) 2020, François Beauducel, covered by BSD License.
 %	All rights reserved.
@@ -142,7 +145,7 @@ tl = datenum(2052,8,25);
 pasaran = {'Pon','Wage','Kliwon','Legi','Pahing'};
 
 % Minggu = 7 day-names of gregorian week
-minggu = {'Senen','Selasa','Rebo','Kemis','Jumungah','Setu','Ngahad'};
+minggu = {'Senen','Selasa','Rebo','Kemis','Jemuwah','Setu','Ngahad'};
 
 % Wuku = 30 week names in the Javanese/Balinese calendar
 wuku = {'Sinta','Landep','Wukir','Kurantil','Tolu','Gumbreg', ...
@@ -183,10 +186,10 @@ kurup3 = { ...
 	'Arbangiyah','Aboge',   1795, 0; % third Kurup (72 taun)
 	};
 
-yogya = false;
-k = strcmpi(varargin,'yogya');
+jogja = false;
+k = strcmpi(varargin,'yogya') | strcmpi(varargin,'jogja');
 if any(k)
-	yogya = true;
+	jogja = true;
 	varargin(k) = [];
 	kurup(3,:) = kurup3;
 end
@@ -195,11 +198,12 @@ kft = cat(1,kurup{:,3}); % vector of Kurup 1st taun
 
 search = '';
 
-switch nargin - yogya
+switch nargin - jogja
 case 1
 	try
 		dt = datenum(varargin{1});
 	catch
+		% --- search mode
 		if ischar(varargin{1})
 			dt = now + (1:366*8);	% will search from today to 8 years ahead
 			search = varargin{1};
@@ -208,18 +212,21 @@ case 1
 		end
 	end
 case 2
+	% --- search mode with time window
 	if ischar(varargin{2})
-		% search mode
 		search = varargin{2};
-		% if year is a 4-digit value, supposes it is not a datenum date and
-		% searches all the year
-		if varargin{1} < 10000
+		% the whole period of the Javanese calendar!
+		if strcmpi(varargin{1},'all')
+			dt = t0:now;
+		elseif varargin{1} < 10000
+			% if year is a 4-digit value, supposes it is not a datenum date and
+			% searches all the year
 			dt = datenum(varargin{1},1,1:366);
 		else
 			dt = datenum(varargin{1});
 		end
+	% --- month calendar mode
 	else
-		% month calendar mode
 		% calculates the number of days in month using DATEVEC
 		ct = datevec(datenum(varargin{1},varargin{2},1:31));
 		day = max(ct(:,3));
@@ -371,7 +378,7 @@ function X=javcal(dt)
 		kurup_index = floor((t - kft(end))/120) + size(kurup,1);
 	end
 	ct = datevec(dt);
-	X.ngayogyakarta = yogya;
+	X.ngayogyakarta = jogja;
 	X.pasaran = pasaran{pasaran_index};
 	X.dinapitu = minggu{minggu_index};
 	X.wuku = wuku{wuku_index};
