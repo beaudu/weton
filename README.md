@@ -92,4 +92,4 @@ The script `weton.m` and the congruence formula developed in `weton.c` have been
 > Karjanto & Beauducel (2020), An ethnoarithmetic excursion into the Javanese calendar, https://arxiv.org/abs/2012.10064
 
 ## Documentation
-See help for syntax, and script comments for details.
+See help for syntax, and script comments for details. See also [![View weton on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://fr.mathworks.com/matlabcentral/fileexchange/30844-weton) for users community comments.
